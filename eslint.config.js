@@ -7,7 +7,7 @@ import globals from 'globals'
 export default defineConfig([
   {
     name: 'app/files-to-lint',
-    files: ['**/*.{vue,js,mjs,jsx}'],
+    files: ['**/*.{vue,js,mjs,jsx}']
   },
 
   globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
@@ -15,16 +15,13 @@ export default defineConfig([
   {
     languageOptions: {
       globals: {
-        ...globals.browser,
-      },
-    },
+        ...globals.browser
+      }
+    }
   },
-    {
+  {
     rules: {
-      'vue/multi-word-component-names': [
-        'warn',
-        { ignores: ['index'] }
-      ],
+      'vue/multi-word-component-names': ['warn', { ignores: ['index'] }],
       'vue/no-setup-props-destructure': 'off',
       'no-undef': 'error'
     }
@@ -33,5 +30,5 @@ export default defineConfig([
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
 
-  skipFormatting,
+  skipFormatting
 ])
