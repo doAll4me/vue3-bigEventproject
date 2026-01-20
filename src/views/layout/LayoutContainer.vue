@@ -1,5 +1,5 @@
 <script setup>
-import avatar from '@/assets/default.png'
+import { useUserStore } from '@/stores'
 import {
   CaretBottom,
   Crop,
@@ -10,12 +10,44 @@ import {
   User,
   UserFilled
 } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+
+const userStore = useUserStore()
+// 发送获取用户信息的请求(可以直接在setup里写，也可以在unmounted里写)
+userStore.getUser()
+
+const router = useRouter()
+const handleCommand = async (key) => {
+  if (key === 'logout') {
+    // 确认操作
+    await ElMessageBox.confirm('你确认要退出吗？', '温馨提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    // 清除本地数据
+    userStore.removeToken()
+    userStore.setUser({})
+    // 跳转登录页
+    router.push('login')
+  } else {
+    router.push(`/user/${key}`)
+  }
+}
 </script>
 
 <template>
   <el-container class="layout-container">
     <el-aside width="200px">
       <div class="el-aside__logo"></div>
+      <!-- el-menu菜单组件
+            :default-active="$route.path"配置默认高亮的菜单项
+            router:  router选项开启，el-menu-item 的 index就是点击跳转的路径
+
+            el-menu-item 菜单项
+            index="/article/channel"配置的是访问的跳转路径
+            配合default-active的值，实现高亮
+      -->
       <el-menu
         active-text-color="#ffd04b"
         background-color="#232323"
@@ -23,7 +55,8 @@ import {
         text-color="#fff"
         router
       >
-        <el-menu-item index="/article/channel">
+        <!--el-menu-item 一级菜单 -->
+        <el-menu-item index="/article/category">
           <el-icon><Management /></el-icon>
           <span>文章分类</span>
         </el-menu-item>
@@ -31,7 +64,10 @@ import {
           <el-icon><Promotion /></el-icon>
           <span>文章管理</span>
         </el-menu-item>
+
+        <!-- el-sub-menu多级菜单 -->
         <el-sub-menu index="/user">
+          <!-- 具名插槽title -->
           <template #title>
             <el-icon><UserFilled /></el-icon>
             <span>个人中心</span>
@@ -53,12 +89,18 @@ import {
     </el-aside>
     <el-container>
       <el-header>
-        <div>黑马程序员：<strong>小帅鹏</strong></div>
-        <el-dropdown placement="bottom-end">
+        <div>
+          用户：<strong>{{
+            userStore.user.nickname || userStore.user.username
+          }}</strong>
+        </div>
+        <el-dropdown placement="bottom-end" @command="handleCommand">
+          <!-- 用户看到的头像 -->
           <span class="el-dropdown__box">
-            <el-avatar :src="avatar" />
+            <el-avatar :src="userStore.user.user_pic || avatar" />
             <el-icon><CaretBottom /></el-icon>
           </span>
+          <!-- 折叠的下拉菜单 -->
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="profile" :icon="User"
