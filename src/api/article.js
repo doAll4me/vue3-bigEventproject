@@ -2,3 +2,15 @@ import request from '@/utils/request'
 
 // 获取文章分类
 export const articleGetCategory = () => request.get('/my/cate/list')
+
+// 新增文章分类
+export const articleAddCategory = ({ cate_name, cate_alias }) =>
+  request.post('/my/cate/add', { cate_name, cate_alias })
+
+// 编辑文章分类
+export const articleEditCategory = ({ id, cate_name, cate_alias }) =>
+  request.put('/my/cate/info', { id, cate_name, cate_alias })
+
+// 删除文章分类
+export const articleDelCategory = (id) =>
+  request.delete('/my/cate/del', { params: { id } })
