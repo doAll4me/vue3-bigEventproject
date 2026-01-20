@@ -14,3 +14,10 @@ export const articleEditCategory = ({ id, cate_name, cate_alias }) =>
 // 删除文章分类
 export const articleDelCategory = (id) =>
   request.delete('/my/cate/del', { params: { id } })
+
+// 文章
+// 获取文章列表
+export const articleGetList = (params) =>
+  request.get('/my/article/list', {
+    params
+  })
