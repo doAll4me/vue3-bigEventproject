@@ -1,13 +1,68 @@
 <script setup>
+import { userUpdateInfoService } from '@/api/user'
 import { useUserStore } from '@/stores'
+import { ElMessage } from 'element-plus'
+import { ref } from 'vue'
+const formRef = ref()
+// 使用仓库中的用户信息进行初始化渲染，无需响应式
+const {
+  user: { username, nickname, email, id },
+  getUser
+} = useUserStore()
 
-const userState = useUserStore()
-const { getUser } = userState
-getUser()
+const userInfo = ref({ username, nickname, email, id })
+
+const rules = {
+  nickname: [
+    { required: true, message: '请输入用户昵称', trigger: 'blur' },
+    {
+      pattern: /^\S{2,10}$/,
+      message: '昵称必须是2-10位的非空字符串',
+      trigger: 'blur'
+    }
+  ],
+  email: [
+    { required: true, message: '请输入用户邮箱', trigger: 'blur' },
+    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+  ]
+}
+
+const submitForm = async () => {
+  // 预校验
+  await formRef.value.validate()
+  // 通过校验就调用更新用户信息接口
+  await userUpdateInfoService(userInfo.value)
+  ElMessage.success('用户信息更新成功')
+  // 响应式更新
+  getUser()
+}
 </script>
 
 <template>
-  <div>个人详情</div>
+  <page-container title="基本资料">
+    <el-row>
+      <el-col :span="12">
+        <el-form
+          :model="userInfo"
+          :rules="rules"
+          ref="formRef"
+          label-width="100px"
+          size="large"
+        >
+          <el-form-item label="登录名称">
+            <el-input v-model="userInfo.username" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="用户昵称" prop="nickname">
+            <el-input v-model="userInfo.nickname"></el-input>
+          </el-form-item>
+          <el-form-item label="用户邮箱" prop="email">
+            <el-input v-model="userInfo.email"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm">提交修改</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+  </page-container>
 </template>
-
-<style scoped></style>

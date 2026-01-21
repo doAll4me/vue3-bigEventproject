@@ -23,3 +23,14 @@ export const userLoginService = ({ username, password }) =>
 
 // 获取用户信息接口
 export const userGetInfoService = () => request.get(`/my/userinfo`)
+
+// 更新用户基本资料接口
+export const userUpdateInfoService = (data) => request.put('/my/userinfo', data)
+
+// 更新用户头像接口
+export const userUpdateAvatarService = (avatar) =>
+  request.patch('/my/update/avatar', { avatar })
+
+// 更新用户密码
+export const userUpdatePwdService = ({ old_pwd, new_pwd, re_pwd }) =>
+  request.patch('/my/updatepwd', { old_pwd, new_pwd, re_pwd })
