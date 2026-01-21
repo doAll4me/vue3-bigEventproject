@@ -21,3 +21,13 @@ export const articleGetList = (params) =>
   request.get('/my/article/list', {
     params
   })
+
+// 发布文章
+export const articlePub = (params) => request.post('/my/article/add', params)
+
+// 获取文章详情
+export const articleGetDetail = (id) =>
+  request.get('/my/article/info', { params: { id } })
+
+// 编辑文章
+export const articleEdit = (params) => request.put('/my/article/info', params)

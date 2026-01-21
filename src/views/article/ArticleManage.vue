@@ -3,6 +3,7 @@ import { articleGetList } from '@/api/article'
 import { formatTime } from '@/utils/format'
 import { Delete, Edit } from '@element-plus/icons-vue'
 import { ref } from 'vue'
+import ArticleEdit from './components/ArticleEdit.vue'
 import CategorySelect from './components/CategorySelect.vue'
 // 假数据
 // const articleList = ref([
@@ -35,7 +36,7 @@ const params = ref({
 // 请求文章列表
 const getArticleList = async () => {
   loading.value = true
-  console.log(params.value)
+  // console.log(params.value)
 
   const res = await articleGetList(params.value)
   articleList.value = res.data.data
@@ -68,21 +69,38 @@ const onReset = () => {
   getArticleList()
 }
 
+// 添加文章
+const articleEditRef = ref()
+const onAddArticle = () => {
+  articleEditRef.value.open({}) //需要传一个空对象作为参数
+}
+
 // 编辑文章
 const onEditAriticle = (row) => {
-  console.log(row)
+  articleEditRef.value.open(row)
+  // console.log(row)
 }
 
 // 删除文章
 const onDeleteArticle = (row) => {
   console.log(row)
 }
+
+// 添加文章或编辑文章成功后刷新页面
+const onSuccess = (type) => {
+  if (type === 'add') {
+    // 如果是添加文章，渲染显示最后一页
+    params.value.pagenum = Math.ceil((total.value + 1) / params.value.pagesize)
+  }
+  // 如果是编辑文章，直接渲染即可
+  getArticleList(params.value)
+}
 </script>
 
 <template>
   <page-container title="文章管理">
     <template #extra>
-      <button>添加文章</button>
+      <button type="primary" @click="onAddArticle">添加文章</button>
     </template>
 
     <!-- 表单区域 -->
@@ -152,6 +170,9 @@ const onDeleteArticle = (row) => {
       @current-change="onCurrentChange"
       style="margin-top: 20px; justify-content: flex-end"
     />
+
+    <!-- 抽屉 -->
+    <article-edit ref="articleEditRef" @success="onSuccess"></article-edit>
   </page-container>
 </template>
 
